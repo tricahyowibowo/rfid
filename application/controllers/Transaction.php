@@ -1,0 +1,109 @@
+<?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Transaction extends CI_Controller {
+
+	public function __construct()
+  {
+      parent::__construct();
+			$this->load->model('crud_model');
+			$this->load->model('cart_model');
+
+  }
+
+	public function index()
+	{
+		$header['pageTitle'] = "Tugas Akhir";
+
+		$data['keranjang'] = $this->cart_model->GetData();
+
+		$this->load->view('template/header', $header);
+		$this->load->view('cart/list_data', $data);
+		$this->load->view('template/footer');
+	}
+
+	public function add(){
+		$kode = $this->input->get('kode');
+		$nama_barang = $this->input->get('nama_barang');
+		$harga = $this->input->get('harga');
+		$jumlah = $this->input->get('jumlah');
+
+		$data = array(
+			'kode' => $kode, 
+			'nama_barang' => $nama_barang,
+			'harga' => $harga, 
+			'jumlah' => $jumlah, 
+		);
+
+		if($this->m_belajar->saveBarang($data)){
+			echo "BERHASIL";
+		}else{
+			echo "ERROR";
+		}
+	}
+
+	public function insert(){
+		$cekKeranjang = $this->m_belajar->MaxNoKeranjang();
+
+		if(is_null($cekKeranjang)){
+			$no_keranjang = 1;
+			$status = 0;
+		}else{
+			$no_keranjang = $cekKeranjang->no_keranjang;
+			$status = $cekKeranjang->status;
+		}
+		
+
+		if ($status == 0){
+			$no_keranjang = $no_keranjang;
+		}else{
+			$no_keranjang = $no_keranjang+1;
+		}
+
+		$kode = $this->input->get('kode');
+		$kasir = $this->session->userdata('kasir');
+
+
+		$dataRfid = array(
+			'no_keranjang' => sprintf("%02d", $no_keranjang),				
+			'kode' => $kode, 
+		);
+
+		if($this->crud_model->input($dataRfid,'keranjang')){
+			echo "BERHASIL";
+		}else{
+			echo "ERROR";
+		}
+	}
+
+	public function formAdd(){
+
+		$this->load->view('view_add');
+	}
+
+	public function cashier(){
+		$header['pageTitle'] = "Tugas Akhir";
+
+		$no_keranjang = $this->input->get('no_keranjang');
+
+		$data['keranjang'] = $this->cart_model->GetDataById(['no_keranjang' => $no_keranjang]);
+
+		$this->load->view('template/header',$header);
+		$this->load->view('cashier',$data);
+		$this->load->view('template/footer');
+	}
+
+	public function print(){
+		$kode = $this->input->get('kode');
+		$no_keranjang = $this->input->get('no_keranjang');
+
+		$data = array(
+			'status' => 1
+		);
+
+		$this->crud_model->update(['no_keranjang' => $no_keranjang], $data, 'keranjang');
+		$data['keranjang'] = $this->cart_model->GetDataById(['no_keranjang' => $no_keranjang]);
+
+		$this->load->view('print',$data);
+	}
+}
