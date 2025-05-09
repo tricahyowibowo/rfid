@@ -51,6 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 $route['default_controller'] = 'Transaction';
 $route['cashier'] = 'Transaction/cashier';
+$route['order'] = 'Transaction/insert';
 $route['print'] = 'Transaction/print';
 
 $route['404_override'] = '';

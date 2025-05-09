@@ -23,6 +23,15 @@ class Cart_model extends CI_Model
 		return $query->result();
 	}
 
+	function cekTransaction($no_mesin){
+		$this->db->select('id_keranjang, no_keranjang, status');
+		$this->db->from('keranjang');
+		$this->db->where('no_mesin',$no_mesin);
+		$this->db->order_by('id_keranjang','DESC');
+		$query = $this->db->get();
+		return $query->row();
+	}
+
 	function MaxNoKeranjang(){
 		$this->db->select('id_keranjang, no_keranjang, status');
 		$this->db->from('keranjang');

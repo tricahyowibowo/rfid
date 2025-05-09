@@ -35,7 +35,7 @@ class Transaction extends CI_Controller {
 			'jumlah' => $jumlah, 
 		);
 
-		if($this->m_belajar->saveBarang($data)){
+		if($this->cart_model->saveBarang($data)){
 			echo "BERHASIL";
 		}else{
 			echo "ERROR";
@@ -43,37 +43,44 @@ class Transaction extends CI_Controller {
 	}
 
 	public function insert(){
-		$cekKeranjang = $this->m_belajar->MaxNoKeranjang();
 
-		if(is_null($cekKeranjang)){
+		// link http://localhost:90/rfid/order?mesin=1&&kode=96-11-51-ae-78
+		$no_mesin = $this->input->get('mesin');
+
+		$cekTransaksi = $this->cart_model->cekTransaction($no_mesin);
+
+		$cekKeranjang = $this->cart_model->MaxNoKeranjang();
+
+		if(is_null($cekTransaksi)){
 			$no_keranjang = 1;
 			$status = 0;
 		}else{
 			$no_keranjang = $cekKeranjang->no_keranjang;
 			$status = $cekKeranjang->status;
 		}
-		
 
-		if ($status == 0){
-			$no_keranjang = $no_keranjang;
-		}else{
-			$no_keranjang = $no_keranjang+1;
-		}
+		var_dump($cekTransaksi);		
+		var_dump($no_keranjang);
 
-		$kode = $this->input->get('kode');
-		$kasir = $this->session->userdata('kasir');
+		// if ($status == 0){
+		// 	$no_keranjang = $no_keranjang;
+		// }else{
+		// 	$no_keranjang = $no_keranjang+1;
+		// }
+
+		// $kode = $this->input->get('kode');
 
 
-		$dataRfid = array(
-			'no_keranjang' => sprintf("%02d", $no_keranjang),				
-			'kode' => $kode, 
-		);
+		// $dataRfid = array(
+		// 	'no_keranjang' => sprintf("%02d", $no_keranjang),				
+		// 	'kode' => $kode, 
+		// );
 
-		if($this->crud_model->input($dataRfid,'keranjang')){
-			echo "BERHASIL";
-		}else{
-			echo "ERROR";
-		}
+		// if($this->crud_model->input($dataRfid,'keranjang')){
+		// 	echo "BERHASIL";
+		// }else{
+		// 	echo "ERROR";
+		// }
 	}
 
 	public function formAdd(){
